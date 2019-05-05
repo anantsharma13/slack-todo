@@ -33,7 +33,7 @@ class TODO  extends DB{
         if($result){
             $responseMessage = "";
             foreach($result as $key => $value){
-                $responseMessage .= ' -'.$value['task']."\n"; 
+                $responseMessage .= ' - '.$value['task']."\n"; 
             }
             return $this->sendResponse($responseMessage);
         }else{
@@ -58,7 +58,7 @@ class TODO  extends DB{
     // mark todo tasks
     public function marktodo(){
         $this->message = str_replace('"',"",$this->message);
-        $whereArr = array('task' => $this->message);
+        $whereArr = array('task' => $this->message, 'ch_id' => $this->ch_id);
         $result = $this->db->remove($whereArr,$this->model);
         if($result){
             return $this->sendResponse('Removed TODO for "'.$this->message.'"');
