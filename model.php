@@ -1,13 +1,19 @@
 <?php
 
-// Schema Model
+// Db Model
 
 class DB {
 
     private $conn = null, $servername = 'localhost', $username = 'root', $password = '1234',$dbname = 'slackapp';
 
-    public function __construct(){
-        $this->conn = new PDO("mysql:host=$this->servername;dbname=$this->dbname", $this->username, $this->password);
+    public function getConnection(){
+        try {
+            $this->conn = new PDO("mysql:host=$this->servername;dbname=$this->dbname", $this->username, $this->password);
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            return true;
+        }catch(PDOException $e){
+            return false;
+        }
     }
 
     public function fetchAll($table){

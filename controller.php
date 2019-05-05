@@ -2,20 +2,15 @@
 
 require_once('model.php');
 
-// $db = new DB();
-// $result = $db->insert(array('u_id' => '121', 'ch_id' => 2121,'task' => 'Be smart', 'created_at' => '23232'),'todo');
-// $result = $db->update(array('ch_id' => '4333'),array('u_id' => '121'),'todo');
-// $result  = $db->fetchAll('todo');
-// $result  = $db->fetch(array('created_at' => '23233' ),'todo');
-// print_r($result);
-
-
-class TODO  extends DB{
+class TODO {
 
     private $db = null,$ch_id = null,$u_id = null,$command = null, $message = "", $model = 'todo';
 
     public function __construct($data){
         $this->db = new DB();
+        if($this->db->getConnection() == false){
+            $this->handleErrors('Unfortunately, TODO app has stopped working.');
+        }
         $this->data = $data;
         $this->parseData();
     }
@@ -47,11 +42,10 @@ class TODO  extends DB{
         $currentDate = date('d-m-Y H:i:s');
         $insertArr = array('u_id' => $this->u_id, 'ch_id' => $this->ch_id, 'task' => $this->message, 'created_at' => $currentDate);
         $result = $this->db->insert($insertArr,$this->model);
-        
         if($result){     
             return $this->sendResponse('Added TODO for "'.$this->message.'"');
         }else{
-            $this->handleErrors();
+            $this->handleErrors('Failed to add TODO "'.$this->message.'"');
         }
     }
 
@@ -63,7 +57,7 @@ class TODO  extends DB{
         if($result){
             return $this->sendResponse('Removed TODO for "'.$this->message.'"');
         }else{
-            $this->handleErrors();
+            $this->handleErrors('TODO "'.$this->message.'" does not exist.');
         }
     }
 
@@ -82,24 +76,25 @@ class TODO  extends DB{
             $this->command = $this->data['command'];
             $this->checkParams();
         }else{
-            $this->handleErrors();
+            $this->handleErrors("We didn't receive any data, try again.");
         }
     }    
 
     public function checkParams(){
         
         if(empty($this->message) && ($this->command != "/listtodos") ) {
-            $this->handleErrors();
+            $this->handleErrors('Please mention TODO task.');
         }else{
             if(!in_array($this->command, array('/listtodos','/addtodo','/marktodo'))){
-                $this->handleErrors();
+                $this->handleErrors('Invalid slash command.');
             }
         }
     }
 
     // Handle all errors
-    public function handleErrors(){
-        return $this->sendResponse('Some error occured');
+    public function handleErrors($error_msg){
+        echo $this->sendResponse($error_msg);
+        die;
     }
 
 } 
