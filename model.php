@@ -86,11 +86,10 @@ class DB {
         
         $whereStr = "";
         foreach($where as $key => $val){
-            $whereStr .= "$key = $val AND ";
+            $whereStr .= "`$key` = '$val' AND ";
         }
         $whereStr = substr($whereStr, 0, -4);
-        
-        $sql = "DELETE * FROM $table WHERE $whereStr"; 
+        $sql = "DELETE FROM `$table` WHERE $whereStr"; 
         $result = $this->conn->prepare($sql);
         $response = $result->execute();
         if($result->rowCount()){
