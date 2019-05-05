@@ -26,7 +26,7 @@ class DB {
     public function fetch($where,$table){
         $whereStr = "";
         foreach($where as $key => $val){
-            $whereStr .= "$key = $val AND ";
+            $whereStr .= "`$key` = '$val' AND ";
         }
         $whereStr = substr($whereStr, 0, -4);
         $sql = "SELECT * FROM $table WHERE $whereStr";

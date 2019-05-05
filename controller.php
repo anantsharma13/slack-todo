@@ -26,7 +26,7 @@ class TODO  extends DB{
     }
 
     // List tasks
-    public function __listtodos(){
+    public function listtodos(){
             
         $whereArr = array('ch_id' => $this->ch_id);
         $result = $this->db->fetch($whereArr,$this->model);
