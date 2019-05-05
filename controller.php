@@ -22,7 +22,7 @@ class TODO  extends DB{
 
     // Executes function respective to command received
     public function executes(){
-        $result = $this->{$this->command};
+       return $this->{substr($this->command,1)}();
     }
 
     // List tasks
@@ -35,20 +35,21 @@ class TODO  extends DB{
             foreach($result as $key => $value){
                 $responseMessage .= '-'.$value['task']."\n"; 
             }
-            $this->sendResponse($responseMessage);
+            return $this->sendResponse($responseMessage);
         }else{
-            $this->sendResponse('No TODOs');
+            return $this->sendResponse('No TODOs');
         }
     }
 
     // add tasks
     public function addtodo(){
-
+       
         $currentDate = date('d-m-Y H:i:s');
         $insertArr = array('u_id' => $this->u_id, 'ch_id' => $this->ch_id, 'task' => $this->message, 'created_at' => $currentDate);
         $result = $this->db->insert($insertArr,$this->model);
-        if($result){
-            $this->sendResponse(`Added TODO for "$this->message"`);
+        
+        if($result){     
+            return $this->sendResponse('Added TODO for "'.$this->message.'"');
         }else{
             $this->handleErrors();
         }
@@ -59,14 +60,13 @@ class TODO  extends DB{
         $whereArr = array('task' => $this->message);
         $result = $this->db->remove($whereArr,$this->model);
         if($result){
-            $this->sendResponse(`Removed TODO for "$this->message"`);
+            return $this->sendResponse('Removed TODO for "'.$this->message.'"');
         }else{
             $this->handleErrors();
         }
     }
 
     public function sendResponse($msg){
-        
         $responseArr = array('response_type' => 'in_channel', 'text' => $msg, 'attachments' => array('text'=> ''));
         $responseJson = json_encode($responseArr);
         return $responseJson;    
@@ -75,9 +75,9 @@ class TODO  extends DB{
     public function parseData(){
 
         if(!empty($this->data)){
-            $this->ch_id = $this->data['ch_id'];
-            $this->u_id = $this->data['u_id'];
-            $this->message = $this->data['message'];
+            $this->ch_id = $this->data['channel_id'];
+            $this->u_id = $this->data['user_id'];
+            $this->message = $this->data['text'];
             $this->command = $this->data['command'];
             $this->checkParams();
         }else{
@@ -87,10 +87,10 @@ class TODO  extends DB{
 
     public function checkParams(){
         
-        if(empty($this->message) && ($this->command != "listtodos") ) {
+        if(empty($this->message) && ($this->command != "/listtodos") ) {
             $this->handleErrors();
         }else{
-            if(!in_array($this->command, array('listtodos','addtodo','marktodo'))){
+            if(!in_array($this->command, array('/listtodos','/addtodo','/marktodo'))){
                 $this->handleErrors();
             }
         }
@@ -98,7 +98,7 @@ class TODO  extends DB{
 
     // Handle all errors
     public function handleErrors(){
-        $this->sendResponse('Some error occured');
+        return $this->sendResponse('Some error occured');
     }
 
 } 
