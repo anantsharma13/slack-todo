@@ -1,11 +1,17 @@
 <?php
 
-// Db Model
+// Db Class to server as Model
+
+// $table -> name of schema (default to todo in controller)
+// $where,$whereArr -> key (column name) => value(value of field) to generate where clause conditions seperate by AND
+// $insertArr -> key (column name) => value( value w.r.t column) to insert in a schema
+// $updateArr -> key (column name) => value( updated value ) to set in a schema
 
 class DB {
 
-    private $conn = null, $servername = 'localhost', $username = 'root', $password = '1234',$dbname = 'slackapp';
+    private $conn = null, $servername = 'localhost', $username = 'root', $password = 'anant@13',$dbname = 'slackapp';
 
+    // Get PDO connection, return false in case of any error else true
     public function getConnection(){
         try {
             $this->conn = new PDO("mysql:host=$this->servername;dbname=$this->dbname", $this->username, $this->password);
@@ -16,6 +22,7 @@ class DB {
         }
     }
 
+    // fetch all the data from a table irrespective of any condition 
     public function fetchAll($table){
         
         $sql = "SELECT * FROM $table"; 
@@ -29,6 +36,7 @@ class DB {
         }
     }
 
+    // fetch all the data from a table with respect to the condition
     public function fetch($where,$table){
         $whereStr = "";
         foreach($where as $key => $val){
@@ -46,6 +54,7 @@ class DB {
         }
     }
 
+    // Insert new record to the table
     public function insert($insertArr,$table){
         
         $colStr = ""; $valStr = "";
@@ -65,8 +74,8 @@ class DB {
         }
     }
 
+    // Update a record to the table 
     public function update($updateArr,$whereArr,$table){
-        
         
         $setStr = ""; $whereStr = "";
         foreach($updateArr as $key => $val){
@@ -88,6 +97,7 @@ class DB {
         }
     }
 
+    // Remove a record from the table
     public function remove($where,$table){
         
         $whereStr = "";
